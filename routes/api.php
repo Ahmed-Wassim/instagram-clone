@@ -9,5 +9,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
-    Route::get('/{username}', 'user');
+    Route::get('/profile/{username}', 'user');
 });
+
+Route::patch('/profile/{username}', [App\Http\Controllers\ProfileController::class, 'update']);
