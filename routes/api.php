@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ExploreController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -45,3 +47,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/users/{user:username}/followings', [FollowController::class, 'followings']);
     Route::get('/users/{user:username}/follow-status', [FollowController::class, 'status']);
 });
+
+//feed, explore
+Route::get('/feed', [FeedController::class, 'index'])->middleware('auth:api');
+
+Route::get('/explore', [ExploreController::class, 'index'])->middleware('auth:api');
