@@ -65,6 +65,8 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json(['error' => 'Not Found'], 404);
         }
+
+        $user->load('posts');
         return response()->json([
             'status' => 'success',
             'user' => $user
