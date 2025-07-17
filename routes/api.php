@@ -15,6 +15,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('logout', 'logout')->middleware('auth:api');
     Route::post('refresh', 'refresh');
+    Route::get('me', 'me')->middleware('auth:api');
     Route::get('/profile/{username}', 'user')->middleware('auth:api');
 });
 
