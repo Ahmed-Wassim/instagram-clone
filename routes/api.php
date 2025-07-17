@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -23,5 +24,15 @@ Route::post('posts/{slug}', [PostController::class, 'update'])->middleware('auth
 Route::middleware('auth:api')->group(function () {
     Route::post('/posts/{post:slug}/like', [LikeController::class, 'like']);
     Route::delete('/posts/{post:slug}/unlike', [LikeController::class, 'unlike']);
-    Route::get('/posts/{post:slug}/likes', [LikeController::class, 'likesCount']);
+    Route::get('/posts/{post:slug}/likes', [LikeController::class, 'likesCount']); //
+
+    Route::post('/comments/{comment}/like', [LikeController::class, 'likeComment']);
+    Route::delete('/comments/{comment}/unlike', [LikeController::class, 'unlikeComment']);
+    Route::get('/comments/{comment}/likes', [LikeController::class, 'commentLikes']); //
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/posts/{post:slug}/comments', [CommentController::class, 'index']); //
+    Route::post('/posts/{post:slug}/comments', [CommentController::class, 'store']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 });
