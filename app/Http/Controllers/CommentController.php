@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Notifications\CommentNotification;
 
 class CommentController extends Controller
 {
@@ -18,6 +19,8 @@ class CommentController extends Controller
             'user_id' => auth()->id(),
             'body' => $request->body,
         ]);
+
+        $post->user->notify(new CommentNotification(auth()->user(), $post->id));
 
         return response()->json([
             'message' => 'Comment added successfully',

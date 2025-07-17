@@ -9,6 +9,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\NotificationController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -53,3 +54,10 @@ Route::middleware('auth:api')->group(function () {
 Route::get('/feed', [FeedController::class, 'index'])->middleware('auth:api');
 
 Route::get('/explore', [ExploreController::class, 'index'])->middleware('auth:api');
+
+Route::middleware('auth:api')->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::get('/unread', [NotificationController::class, 'unread']);
+    Route::post('/read/{id}', [NotificationController::class, 'markAsRead']);
+    Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
+});

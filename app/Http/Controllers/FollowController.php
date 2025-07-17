@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\FollowNotification;
 
 class FollowController extends Controller
 {
@@ -20,6 +21,8 @@ class FollowController extends Controller
         }
 
         $authUser->followings()->attach($user->id);
+
+        $user->notify(new FollowNotification(auth()->user()));
 
         return response()->json(['message' => 'Followed successfully']);
     }
