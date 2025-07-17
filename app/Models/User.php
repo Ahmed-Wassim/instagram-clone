@@ -29,6 +29,9 @@ class User extends Authenticatable implements JWTSubject
         'website',
     ];
 
+    protected $with = ['image'];
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -81,6 +84,11 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -94,5 +102,20 @@ class User extends Authenticatable implements JWTSubject
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id')->withTimestamps();
+    }
+
+    public function isFollowing(User $user): bool
+    {
+        return $this->followings()->where('following_id', $user->id)->exists();
     }
 }

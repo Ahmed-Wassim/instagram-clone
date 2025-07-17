@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\CommentController;
 
 Route::controller(AuthController::class)->group(function () {
@@ -35,4 +36,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/posts/{post:slug}/comments', [CommentController::class, 'index']); //
     Route::post('/posts/{post:slug}/comments', [CommentController::class, 'store']);
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/users/{user:username}/follow', [FollowController::class, 'follow']);
+    Route::delete('/users/{user:username}/unfollow', [FollowController::class, 'unfollow']);
+    Route::get('/users/{user:username}/followers', [FollowController::class, 'followers']);
+    Route::get('/users/{user:username}/followings', [FollowController::class, 'followings']);
+    Route::get('/users/{user:username}/follow-status', [FollowController::class, 'status']);
 });
