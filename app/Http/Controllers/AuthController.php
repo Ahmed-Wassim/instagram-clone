@@ -23,9 +23,12 @@ class AuthController extends Controller
             "name" => $request->name,
             "email" => $request->email,
             "password" => Hash::make($request->password),
-            'avatar' => $avatar,
             'bio' => $request->bio,
             'website' => $request->website,
+        ]);
+
+        $user->image()->create([
+            'url' => $avatar,
         ]);
 
         $token = Auth::login($user);

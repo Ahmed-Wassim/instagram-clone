@@ -6,11 +6,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ReelController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\ReelLikeController;
 use App\Http\Controllers\SavedPostController;
+use App\Http\Controllers\ReelCommentController;
 use App\Http\Controllers\NotificationController;
 
 Route::controller(AuthController::class)->group(function () {
@@ -69,3 +72,20 @@ Route::middleware('auth:api')->prefix('notifications')->group(function () {
 });
 
 Route::get('/search', [SearchController::class, 'index']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/reels', [ReelController::class, 'store']);
+    Route::get('/reels', [ReelController::class, 'index']);
+    Route::get('/reels/{reel}', [ReelController::class, 'show']);
+    Route::delete('/reels/{reel}', [ReelController::class, 'destroy']);
+});
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/reels/{id}/like', [ReelLikeController::class, 'like']);
+    Route::delete('/reels/{id}/unlike', [ReelLikeController::class, 'unlike']);
+
+    Route::get('/reels/{id}/comments', [ReelCommentController::class, 'index']);
+    Route::post('/reels/{id}/comments', [ReelCommentController::class, 'store']);
+    Route::delete('/reels/{id}/comments/{commentId}', [ReelCommentController::class, 'destroy']);
+});
