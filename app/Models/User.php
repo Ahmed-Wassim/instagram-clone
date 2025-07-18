@@ -130,4 +130,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->followings()->where('following_id', $user->id)->exists();
     }
+
+    public function savedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'saved_posts')->withTimestamps();
+    }
 }

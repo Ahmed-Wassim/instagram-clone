@@ -7,8 +7,10 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\SavedPostController;
 use App\Http\Controllers\NotificationController;
 
 Route::controller(AuthController::class)->group(function () {
@@ -30,6 +32,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/posts/{post:slug}/like', [LikeController::class, 'like']);
     Route::delete('/posts/{post:slug}/unlike', [LikeController::class, 'unlike']);
     Route::get('/posts/{post:slug}/likes', [LikeController::class, 'likesCount']); //
+
+    Route::post('/posts/{id}/save', [SavedPostController::class, 'store']);
+    Route::delete('/posts/{id}/unsave', [SavedPostController::class, 'destroy']);
+    Route::get('/saved-posts', [SavedPostController::class, 'index']);
 
     Route::post('/comments/{comment}/like', [LikeController::class, 'likeComment']);
     Route::delete('/comments/{comment}/unlike', [LikeController::class, 'unlikeComment']);
@@ -61,3 +67,5 @@ Route::middleware('auth:api')->prefix('notifications')->group(function () {
     Route::post('/read/{id}', [NotificationController::class, 'markAsRead']);
     Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
 });
+
+Route::get('/search', [SearchController::class, 'index']);

@@ -46,6 +46,16 @@ class FeedController extends Controller
         return response()->json($posts);
     }
 
+    public function show($id)
+    {
+        $post = Post::with(['user:id,name,username', 'images'])->findOrFail($id);
+
+        return response()->json([
+            'post' => $post,
+            'is_saved' => $post->isSavedBy(auth()->user())
+        ]);
+    }
+
     /**
      * Generate cache key for user's feed
      */

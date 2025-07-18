@@ -186,4 +186,9 @@ class Post extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
+    public function isSavedBy(User $user)
+    {
+        return $this->savedByUsers()->where('user_id', $user->id)->exists();
+    }
 }
