@@ -7,6 +7,7 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReelController;
+use App\Http\Controllers\StoryController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CommentController;
@@ -88,4 +89,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/reels/{id}/comments', [ReelCommentController::class, 'index']);
     Route::post('/reels/{id}/comments', [ReelCommentController::class, 'store']);
     Route::delete('/reels/{id}/comments/{commentId}', [ReelCommentController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/stories', [StoryController::class, 'store']);
+    Route::get('/stories', [StoryController::class, 'index']);
 });
