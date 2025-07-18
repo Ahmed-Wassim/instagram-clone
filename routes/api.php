@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeedController;
@@ -26,72 +25,88 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/profile/{username}', 'user')->middleware('auth:api');
 });
 
-Route::post('/profile/{username}', [App\Http\Controllers\ProfileController::class, 'update'])->middleware('auth:api');
-
-Route::post('/posts', [PostController::class, 'store'])->middleware('auth:api');
-Route::delete('/posts/{slug}', [PostController::class, 'destory'])->middleware('auth:api');
-Route::post('posts/{slug}', [PostController::class, 'update'])->middleware('auth:api');
 
 Route::middleware('auth:api')->group(function () {
-    Route::post('/posts/{post:slug}/like', [LikeController::class, 'like']);
-    Route::delete('/posts/{post:slug}/unlike', [LikeController::class, 'unlike']);
-    Route::get('/posts/{post:slug}/likes', [LikeController::class, 'likesCount']); //
+    Route::post('/profile/{username}', [App\Http\Controllers\ProfileController::class, 'update']);
 
-    Route::post('/posts/{id}/save', [SavedPostController::class, 'store']);
-    Route::delete('/posts/{id}/unsave', [SavedPostController::class, 'destroy']);
+
+    Route::prefix('posts')->group(function () {
+        //post controller
+        Route::post('/', [PostController::class, 'store']);
+        Route::delete('/{slug}', [PostController::class, 'destory']);
+        Route::post('/{slug}', [PostController::class, 'update']);
+
+        //like posts
+        Route::post('/{post:slug}/like', [LikeController::class, 'like']);
+        Route::delete('/{post:slug}/unlike', [LikeController::class, 'unlike']);
+        Route::get('/{post:slug}/likes', [LikeController::class, 'likesCount']);
+
+        //save posts, bookmarks+
+        Route::post('/{id}/save', [SavedPostController::class, 'store']);
+        Route::delete('/{id}/unsave', [SavedPostController::class, 'destroy']);
+
+        //comment on posts
+        Route::get('/{post:slug}/comments', [CommentController::class, 'index']);
+        Route::post('/{post:slug}/comments', [CommentController::class, 'store']);
+    });
+
+    //saved posts
     Route::get('/saved-posts', [SavedPostController::class, 'index']);
 
-    Route::post('/comments/{comment}/like', [LikeController::class, 'likeComment']);
-    Route::delete('/comments/{comment}/unlike', [LikeController::class, 'unlikeComment']);
-    Route::get('/comments/{comment}/likes', [LikeController::class, 'commentLikes']); //
-});
 
-Route::middleware('auth:api')->group(function () {
-    Route::get('/posts/{post:slug}/comments', [CommentController::class, 'index']); //
-    Route::post('/posts/{post:slug}/comments', [CommentController::class, 'store']);
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
-});
+    //like comments
+    Route::prefix('comments')->group(function () {
+        Route::post('/{comment}/like', [LikeController::class, 'likeComment']);
+        Route::delete('/{comment}/unlike', [LikeController::class, 'unlikeComment']);
+        Route::get('/{comment}/likes', [LikeController::class, 'commentLikes']);
+        Route::delete('/{comment}', [CommentController::class, 'destroy']);
+    });
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('/users/{user:username}/follow', [FollowController::class, 'follow']);
-    Route::delete('/users/{user:username}/unfollow', [FollowController::class, 'unfollow']);
-    Route::get('/users/{user:username}/followers', [FollowController::class, 'followers']);
-    Route::get('/users/{user:username}/followings', [FollowController::class, 'followings']);
-    Route::get('/users/{user:username}/follow-status', [FollowController::class, 'status']);
-});
+    //follow system
+    Route::prefix('users')->group(function () {
+        Route::post('/{user:username}/follow', [FollowController::class, 'follow']);
+        Route::delete('/{user:username}/unfollow', [FollowController::class, 'unfollow']);
+        Route::get('/{user:username}/followers', [FollowController::class, 'followers']);
+        Route::get('/{user:username}/followings', [FollowController::class, 'followings']);
+        Route::get('/{user:username}/follow-status', [FollowController::class, 'status']);
+    });
 
-//feed, explore
-Route::get('/feed', [FeedController::class, 'index'])->middleware('auth:api');
+    //feed
+    Route::get('/feed', [FeedController::class, 'index']);
 
-Route::get('/explore', [ExploreController::class, 'index'])->middleware('auth:api');
+    //explore
+    Route::get('/explore', [ExploreController::class, 'index']);
 
-Route::middleware('auth:api')->prefix('notifications')->group(function () {
-    Route::get('/', [NotificationController::class, 'index']);
-    Route::get('/unread', [NotificationController::class, 'unread']);
-    Route::post('/read/{id}', [NotificationController::class, 'markAsRead']);
-    Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
-});
+    //notifications
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread', [NotificationController::class, 'unread']);
+        Route::post('/read/{id}', [NotificationController::class, 'markAsRead']);
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead']);
+    });
 
-Route::get('/search', [SearchController::class, 'index']);
+    //search on users, posts
+    Route::get('/search', [SearchController::class, 'index']);
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('/reels', [ReelController::class, 'store']);
-    Route::get('/reels', [ReelController::class, 'index']);
-    Route::get('/reels/{reel}', [ReelController::class, 'show']);
-    Route::delete('/reels/{reel}', [ReelController::class, 'destroy']);
-});
+    Route::prefix('reels')->group(function () {
+        //reel
+        Route::post('/', [ReelController::class, 'store']);
+        Route::get('/', [ReelController::class, 'index']);
+        Route::get('/{reel}', [ReelController::class, 'show']);
+        Route::delete('/{reel}', [ReelController::class, 'destroy']);
 
+        //like reels
+        Route::post('/{id}/like', [ReelLikeController::class, 'like']);
+        Route::delete('/{id}/unlike', [ReelLikeController::class, 'unlike']);
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('/reels/{id}/like', [ReelLikeController::class, 'like']);
-    Route::delete('/reels/{id}/unlike', [ReelLikeController::class, 'unlike']);
+        // comment on reels
+        Route::get('/{id}/comments', [ReelCommentController::class, 'index']);
+        Route::post('/{id}/comments', [ReelCommentController::class, 'store']);
+        Route::delete('/{id}/comments/{commentId}', [ReelCommentController::class, 'destroy']);
+    });
 
-    Route::get('/reels/{id}/comments', [ReelCommentController::class, 'index']);
-    Route::post('/reels/{id}/comments', [ReelCommentController::class, 'store']);
-    Route::delete('/reels/{id}/comments/{commentId}', [ReelCommentController::class, 'destroy']);
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/stories', [StoryController::class, 'store']);
-    Route::get('/stories', [StoryController::class, 'index']);
+    Route::prefix('stories')->group(function () {
+        Route::post('/', [StoryController::class, 'store']);
+        Route::get('/', [StoryController::class, 'index']);
+    });
 });
